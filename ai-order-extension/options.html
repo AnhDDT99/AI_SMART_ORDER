@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Cài đặt — AI Smart Order</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { max-width: 680px; margin: 0 auto; padding: 24px 20px 40px; }
+        h1 { margin: 0 0 4px; font-size: 22px; font-weight: 600; }
+        h2 { margin: 24px 0 8px; font-size: 16px; font-weight: 600; color: #1f2937; }
+        .hint, .section-hint { margin: 0 0 16px; color: #6b7280; font-size: 13px; }
+        
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; color: #4b5563; }
+        .form-group input[type="text"], .form-group select, .form-group textarea { 
+            width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; font-family: inherit;
+        }
+        hr { border: none; border-top: 1px solid #e5e7eb; margin: 24px 0; }
+        
+        /* Layout Danh sách trường: Chỉ 3 cột (STT, Input, Thao tác) */
+        .field-map { border: 1px solid #d1d5db; border-radius: 6px; overflow: hidden; }
+        .field-map-head, .field-item {
+            display: grid;
+            grid-template-columns: 40px 1fr 120px;
+            gap: 12px; align-items: center; padding: 10px 12px;
+        }
+        .field-map-head { background: #f3f4f6; font-size: 12px; font-weight: 600; color: #4b5563; text-transform: uppercase; }
+        .field-item { border-top: 1px solid #d1d5db; background: #fff; }
+        ul#fields-list { list-style: none; margin: 0; padding: 0; }
+        .field-item input { width: 100%; padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 4px; }
+        .field-item .idx { text-align: center; color: #6b7280; font-size: 13px; font-weight: 500;}
+        
+        .field-actions { display: flex; gap: 4px; }
+        .icon-btn { width: 32px; height: 32px; border: 1px solid #d1d5db; background: #fff; border-radius: 4px; cursor: pointer; font-size: 14px;}
+        .icon-btn:hover { background: #f3f4f6; }
+        .icon-btn.danger { color: #ef4444; }
+        
+        .add-row { display: flex; gap: 8px; margin-top: 12px; }
+        .add-row input { flex: 1; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; }
+        .btn { padding: 10px 16px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;}
+        .btn-secondary { background: #e5e7eb; color: #374151; }
+        
+        /* Box cấu hình tự động & Map code */
+        .auto-box { display: flex; gap: 24px; padding: 14px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; margin-bottom: 16px;}
+        .auto-box label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; font-weight: 600; color: #1e40af; margin: 0;}
+        .auto-box input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
+        
+        .map-wire { border: 1px solid #d1d5db; padding: 16px; border-radius: 6px; background: #fafafa; }
+        .row { display: flex; align-items: center; gap: 12px; margin-top: 24px; }
+        #status { font-size: 14px; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <h1>Cấu hình hệ thống</h1>
+    <p class="hint">Cài đặt kết nối Sheets, dọn dẹp form và cấu hình tồn kho.</p>
+
+    <div class="form-group">
+        <label>ID Google Sheets</label>
+        <input type="text" id="spreadsheet_id" placeholder="1BxiMVs0XRYFgPNexI…">
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="form-group">
+            <label>Tên sheet đổ đơn</label>
+            <input type="text" id="order_sheet" placeholder="Don_Hang">
+        </div>
+        <div class="form-group">
+            <label>Ô bắt đầu đổ đơn</label>
+            <input type="text" id="order_start_cell" placeholder="A1">
+        </div>
+    </div>
+
+    <hr>
+    <h2>1. Quản lý trường dữ liệu Form</h2>
+    <p class="section-hint">Tạo các trường cơ bản (Tên, SĐT, Địa chỉ, Mã SP, Số lượng...).</p>
+    
+    <div class="field-map">
+        <div class="field-map-head">
+            <span>#</span><span>Tên trường</span><span>Thao tác</span>
+        </div>
+        <ul id="fields-list"></ul>
+    </div>
+    <div class="add-row">
+        <input type="text" id="new-field-name" placeholder="Tên trường mới (vd: Ghi chú)">
+        <button type="button" id="btn-add-field" class="btn btn-secondary">Thêm trường</button>
+    </div>
+
+    <hr>
+    <h2>2. Bắt Link tự động</h2>
+    <p class="section-hint">Tích chọn nếu bạn muốn Extension tự động thêm 2 cột này vào Google Sheets khi chốt đơn.</p>
+    <div class="auto-box">
+        <label><input type="checkbox" id="auto_fb"> Bắt Link Facebook (Tab URL)</label>
+        <label><input type="checkbox" id="auto_img"> Bắt Link Ảnh (Image URL)</label>
+    </div>
+
+    <hr>
+    <h2>3. Cấu hình dò Tồn Kho</h2>
+    <p class="section-hint">Nối trường chứa mã SP trên form với cột mã SP trong Sheet Tồn Kho.</p>
+    <div class="map-wire">
+        <div class="form-group">
+            <label>1. Trường chứa "Mã SP" trên Form của bạn là trường nào?</label>
+            <select id="inventory_field_name"></select>
+        </div>
+        <div class="form-group">
+            <label>2. Tên sheet Tồn Kho</label>
+            <input type="text" id="inventory_sheet" placeholder="Kho_Hang">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 0;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>Cột Mã SP trên Sheet (VD: B)</label>
+                <input type="text" id="inventoryCodeCol" placeholder="B">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>Cột Số lượng trên Sheet (VD: D)</label>
+                <input type="text" id="col_qty" placeholder="D">
+            </div>
+        </div>
+    </div>
+
+    <hr>
+    <div class="form-group">
+        <label>Prompt cho AI bóc tách</label>
+        <textarea id="ai_prompt" rows="3" placeholder="Trích xuất đúng các trường đã cấu hình…"></textarea>
+    </div>
+
+    <div class="row">
+        <button type="button" id="save_btn" class="btn" style="min-width: 140px;">Lưu cấu hình</button>
+        <span id="status"></span>
+    </div>
+
+    <script src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "AI Smart Order",
+  "version": "1.0",
+  "permissions": [
+    "contextMenus",
+    "storage",
+    "notifications",
+    "activeTab",
+    "scripting",
+    "sidePanel" 
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Mở AI Smart Order"
+  },
+  "side_panel": {
+    "default_path": "popup.html"
+  },
+  "options_page": "options.html"
+}

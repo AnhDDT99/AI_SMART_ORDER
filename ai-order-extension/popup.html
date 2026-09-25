@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI Smart Order</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <h1 class="title">AI Smart Order</h1>
+        <p class="subtitle">Kiểm tra tồn kho và chốt đơn</p>
+    </header>
+
+    <main id="form-root" class="form-root" aria-live="polite">
+        <p class="empty-state" id="empty-state">
+            Chưa có dữ liệu đơn. Bôi đen tin nhắn / chuột phải ảnh →
+            <strong>Chốt đơn AI</strong>.
+        </p>
+        <div id="fields" class="fields" hidden></div>
+    </main>
+
+    <footer class="actions">
+        <button type="button" id="btn-check" class="btn btn-secondary" disabled>Check kho</button>
+        <button type="button" id="btn-save" class="btn btn-primary" disabled>Lưu đơn</button>
+    </footer>
+
+    <p id="msg" class="msg" role="status"></p>
+
+    <script src="ui.js"></script>
+</body>
+</html>
